@@ -113,10 +113,37 @@ def main():
     from datetime import datetime
     timestamp = datetime.now().strftime("%Y-%m-%d-%H%M")
 
+    used = []
+
+    if use_face:
+        used.append("face")
+
     if args.idphoto:
-        outdir = Path("kep-{timestamp}")
-    else:
-        outdir = Path(f"processed-{timestamp}")
+        used.append("idphoto")
+
+    if args.grayscale:
+        used.append("grayscale")
+
+    if args.rotate:
+        used.append(f"rotate{args.rotate}")
+
+    if args.blur:
+        used.append(f"blur{args.blur}")
+
+    if args.sharp:
+        used.append("sharp")
+
+    if args.watermark:
+        used.append("watermark")
+
+    # Ha semmi extra funkció nincs → alap
+    if not used:
+        used.append("alap")
+
+    # Mappa felépítése
+    folder_name = "-".join(used) + "-" + timestamp
+
+    outdir = Path(folder_name)
 
     outdir.mkdir(exist_ok=True)
 
@@ -159,7 +186,6 @@ def main():
                 if args.watermark:
                     img = apply_watermark(img, args.watermark)
 
-                # Mentés
                 outpath = outdir / f.name
                 img.save(outpath)
                 print(f"OK: {f.name} -> {outpath}")
